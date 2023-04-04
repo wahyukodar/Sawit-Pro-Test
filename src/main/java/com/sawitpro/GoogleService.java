@@ -38,7 +38,7 @@ public class GoogleService {
                 .build();
     }
 
-    public Credential getCredentials() throws Exception {
+    public void getCredentials() throws Exception {
         NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(GSON_FACTORY, new InputStreamReader(new FileInputStream(CREDENTIALS_FILE_PATH)));
         FileDataStoreFactory dataStore = new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH));
@@ -61,7 +61,6 @@ public class GoogleService {
                 throw new Exception("Credentials expired");
             }
         }
-        return credential;
     }
 
     public String uploadImageAsDocument(String imagePath) throws IOException {

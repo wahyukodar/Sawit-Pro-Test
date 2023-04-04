@@ -79,4 +79,10 @@ public class UtilTests {
         boolean i = Utils.isAlphaNumeric("shuí-shéi");
         assertFalse(i);
     }
+
+    @Test
+    public void checkIsAlphaNumeric13(){
+        boolean i = Utils.isAlphaNumeric("word");
+        assertTrue(i);
+    }
 }

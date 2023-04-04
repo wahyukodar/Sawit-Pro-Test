@@ -22,6 +22,7 @@ public class OCRServlet extends HttpServlet {
             String fileName = request.getParameter("filename");
             String fileId = googleService.uploadImageAsDocument(fileName);
             String text = googleService.downloadExtractedText(fileId);
+            googleService.deleteFile(fileId);
             text = text.replace("________________\n\n", "");
             System.out.println(text);
         } catch (Exception e) {

@@ -14,13 +14,16 @@ public class OCRServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String text = "success";
         GoogleService googleService = new GoogleService();
         response.setContentType("text/plain");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         try {
             googleService.getCredentials();
-            googleService.uploadImageAsDocument(request.getParameter("filename"));
+            String fileName = request.getParameter("filename");
+            String fileId = googleService.uploadImageAsDocument(fileName);
+            String text = googleService.downloadExtractedText(fileId);
+            text = text.replace("________________\n\n", "");
+            System.out.println(text);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             response.setStatus(500);
@@ -28,6 +31,6 @@ public class OCRServlet extends HttpServlet {
             return;
         }
         response.setStatus(200);
-        response.getWriter().write(text);
+        response.getWriter().write("success");
     }
 }

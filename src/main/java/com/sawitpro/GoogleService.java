@@ -15,12 +15,12 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GoogleService {
     private static final String APPLICATION_NAME = "Sawit Pro Test";
@@ -80,5 +80,17 @@ public class GoogleService {
             System.err.println("Unable to upload file: " + e.getDetails());
             throw e;
         }
+    }
+
+    public String downloadExtractedText(String id) throws IOException {
+        InputStream inputStream = this.getDrive().files().export(id, "text/plain").executeMedia().getContent();
+        return new BufferedReader(
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+    }
+
+    public void deleteFile(String id) throws IOException {
+        this.getDrive().files().delete(id).execute();
     }
 }

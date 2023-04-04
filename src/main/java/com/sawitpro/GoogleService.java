@@ -6,22 +6,37 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 public class GoogleService {
+    private static final String APPLICATION_NAME = "Sawit Pro Test";
     private static final GsonFactory GSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final String CREDENTIALS_FILE_PATH = "credentials.json";
+    private Credential credential;
+
+    public Drive getDrive() {
+        return new Drive.Builder(new NetHttpTransport(),
+                GsonFactory.getDefaultInstance(),
+                credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
 
     public Credential getCredentials() throws Exception {
         NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -33,7 +48,7 @@ public class GoogleService {
                 .setDataStoreFactory(dataStore)
                 .setAccessType("offline")
                 .build();
-        Credential credential = flow.loadCredential("user");
+        credential = flow.loadCredential("user");
         if (credential == null) {
             credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
         }
@@ -47,5 +62,23 @@ public class GoogleService {
             }
         }
         return credential;
+    }
+
+    public String uploadImageAsDocument(String imagePath) throws IOException {
+        File fileMetadata = new File();
+        java.io.File filePath = new java.io.File(imagePath);
+        fileMetadata.setName(filePath.getName());
+        fileMetadata.setMimeType("application/vnd.google-apps.document");
+        FileContent mediaContent = new FileContent("image/jpeg", filePath);
+        try {
+            File file = this.getDrive().files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute();
+            System.out.println("File ID: " + file.getId());
+            return file.getId();
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to upload file: " + e.getDetails());
+            throw e;
+        }
     }
 }

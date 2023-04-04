@@ -14,13 +14,13 @@ public class OCRServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println(request.getParameter("filename"));
-        String text = "test";
+        String text = "success";
         GoogleService googleService = new GoogleService();
         response.setContentType("text/plain");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         try {
             googleService.getCredentials();
+            googleService.uploadImageAsDocument(request.getParameter("filename"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             response.setStatus(500);

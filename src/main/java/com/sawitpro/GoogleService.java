@@ -74,7 +74,6 @@ public class GoogleService {
             File file = this.getDrive().files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute();
-            System.out.println("File ID: " + file.getId());
             return file.getId();
         } catch (GoogleJsonResponseException e) {
             System.err.println("Unable to upload file: " + e.getDetails());

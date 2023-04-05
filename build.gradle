@@ -1,5 +1,5 @@
 plugins {
-	id 'java'
+	id 'application'
 }
 
 group = 'com'
@@ -18,6 +18,10 @@ dependencies {
 	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.34.1'
 	implementation 'com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+}
+
+application {
+	mainClass = 'com.sawitpro.SawitProApplication'
 }
 
 tasks.named('test') {
